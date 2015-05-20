@@ -484,36 +484,36 @@ angular
  * parts that make up our component.
  */
 
-function MdAutocomplete ($mdTheming, $mdUtil) {
-  return {
-    controller:   'MdAutocompleteCtrl',
-    controllerAs: '$mdAutocompleteCtrl',
-    link:         link,
-    scope:        {
-      name:          '@',
-      searchText:    '=?mdSearchText',
-      selectedItem:  '=?mdSelectedItem',
-      itemsExpr:     '@mdItems',
-      itemText:      '&mdItemText',
-      placeholder:   '@placeholder',
-      noCache:       '=?mdNoCache',
-      itemChange:    '&?mdSelectedItemChange',
-      textChange:    '&?mdSearchTextChange',
-      minLength:     '=?mdMinLength',
-      delay:         '=?mdDelay',
-      autofocus:     '=?mdAutofocus',
-      floatingLabel: '@?mdFloatingLabel',
-      autoselect:    '=?mdAutoselect',
-      menuClass:     '@?mdMenuClass'
-    },
-    template: function (element, attr) {
-      var itemTemplate = getItemTemplate(),
-          noItemsTemplate = getNoItemsTemplate();
-      return '\
+function MdAutocomplete($mdTheming, $mdUtil) {
+    return {
+        controller: 'MdAutocompleteCtrl',
+        controllerAs: '$mdAutocompleteCtrl',
+        link: link,
+        scope: {
+            name: '@',
+            searchText: '=?mdSearchText',
+            selectedItem: '=?mdSelectedItem',
+            itemsExpr: '@mdItems',
+            itemText: '&mdItemText',
+            placeholder: '@placeholder',
+            noCache: '=?mdNoCache',
+            itemChange: '&?mdSelectedItemChange',
+            textChange: '&?mdSearchTextChange',
+            minLength: '=?mdMinLength',
+            delay: '=?mdDelay',
+            autofocus: '=?mdAutofocus',
+            floatingLabel: '@?mdFloatingLabel',
+            autoselect: '=?mdAutoselect',
+            menuClass: '@?mdMenuClass'
+        },
+        template: function(element, attr) {
+            var itemTemplate = getItemTemplate(),
+                noItemsTemplate = getNoItemsTemplate();
+            return '\
         <md-autocomplete-wrap role="listbox">\
           <md-input-container ng-if="floatingLabel">\
             <label>{{floatingLabel}}</label>\
-            <input type="text"\
+            <input type="search"\
                 id="fl-input-{{$mdAutocompleteCtrl.id}}"\
                 name="{{name}}"\
                 autocomplete="off"\
@@ -529,7 +529,7 @@ function MdAutocomplete ($mdTheming, $mdUtil) {
                 aria-activedescendant=""\
                 aria-expanded="{{!$mdAutocompleteCtrl.hidden}}"/>\
           </md-input-container>\
-          <input type="text"\
+          <input type="search"\
               id="input-{{$mdAutocompleteCtrl.id}}"\
               name="{{name}}"\
               ng-if="!floatingLabel"\
@@ -570,12 +570,10 @@ function MdAutocomplete ($mdTheming, $mdUtil) {
                 md-autocomplete-list-item="$mdAutocompleteCtrl.itemName">\
                 ' + itemTemplate + '\
             </li>\
-            ' + (function () {
-              return noItemsTemplate
-                  ? '<li ng-if="!$mdAutocompleteCtrl.matches.length"\
+            ' + (function() {
+                return noItemsTemplate ? '<li ng-if="!$mdAutocompleteCtrl.matches.length"\
                         ng-hide="$mdAutocompleteCtrl.hidden"\
-                        md-autocomplete-parent-scope>' + noItemsTemplate + '</li>'
-                  : '';
+                        md-autocomplete-parent-scope>' + noItemsTemplate + '</li>' : '';
             })() + '\
           </ul>\
         </md-autocomplete-wrap>\
@@ -586,25 +584,30 @@ function MdAutocomplete ($mdTheming, $mdUtil) {
           <p ng-repeat="message in $mdAutocompleteCtrl.messages">{{message.display}}</p>\
         </aria-status>';
 
-      function getItemTemplate () {
-        var templateTag = element.find('md-item-template').remove();
-        return templateTag.length ? templateTag.html() : element.html();
-      }
+            function getItemTemplate() {
+                var templateTag = element.find('md-item-template').remove();
+                return templateTag.length ? templateTag.html() : element.html();
+            }
 
-      function getNoItemsTemplate () {
-        var templateTag = element.find('md-not-found').remove();
-        return templateTag.length ? templateTag.html() : '';
-      }
+            function getNoItemsTemplate() {
+                var templateTag = element.find('md-not-found').remove();
+                return templateTag.length ? templateTag.html() : '';
+            }
+        }
+    };
+
+    function link(scope, element, attr) {
+        attr.$observe('disabled', function(value) {
+            scope.isDisabled = value;
+        });
+
+        $mdUtil.initOptionalProperties(scope, attr, {
+            searchText: null,
+            selectedItem: null
+        });
+
+        $mdTheming(element);
     }
-  };
-
-  function link (scope, element, attr) {
-    attr.$observe('disabled', function (value) { scope.isDisabled = value; });
-
-    $mdUtil.initOptionalProperties(scope, attr, {searchText:null, selectedItem:null} );
-
-    $mdTheming(element);
-  }
 }
 MdAutocomplete.$inject = ["$mdTheming", "$mdUtil"];
 
