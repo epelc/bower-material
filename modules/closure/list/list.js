@@ -2,7 +2,7 @@
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.9.0
+ * v0.11.2
  */
 goog.provide('ng.material.components.list');
 goog.require('ng.material.core');
@@ -73,7 +73,7 @@ mdListDirective.$inject = ["$mdTheming"];
  * </hljs>
  *
  */
-function mdListItemDirective($mdAria, $mdConstant, $timeout) {
+function mdListItemDirective($mdAria, $mdConstant, $mdUtil, $timeout) {
   var proxiedTypes = ['md-checkbox', 'md-switch'];
   return {
     restrict: 'E',
@@ -95,7 +95,7 @@ function mdListItemDirective($mdAria, $mdConstant, $timeout) {
         }
         if (hasProxiedElement) {
           wrapIn('div');
-        } else {
+        } else if (!tEl[0].querySelector('md-button')) {
           tEl.addClass('md-no-proxy');
         }
       } else {
@@ -119,7 +119,6 @@ function mdListItemDirective($mdAria, $mdConstant, $timeout) {
         }
       }
 
-
       function wrapIn(type) {
         var container;
         if (type == 'div') {
@@ -128,8 +127,13 @@ function mdListItemDirective($mdAria, $mdConstant, $timeout) {
           tEl.addClass('md-proxy-focus');
         } else {
           container = angular.element('<md-button class="md-no-style"><div class="md-list-item-inner"></div></md-button>');
-          container[0].setAttribute('ng-click', tEl[0].getAttribute('ng-click'));
-          tEl[0].removeAttribute('ng-click');
+          var copiedAttrs = ['ng-click', 'aria-label', 'ng-disabled'];
+          angular.forEach(copiedAttrs, function(attr) {
+            if (tEl[0].hasAttribute(attr)) {
+              container[0].setAttribute(attr, tEl[0].getAttribute(attr));
+              tEl[0].removeAttribute(attr);
+            }
+          });
           container.children().eq(0).append(tEl.contents());
         }
 
@@ -213,13 +217,15 @@ function mdListItemDirective($mdAria, $mdConstant, $timeout) {
         }
 
         if (!hasClick && !proxies.length) {
-          firstChild.addEventListener('keypress', function(e) {
+          firstChild && firstChild.addEventListener('keypress', function(e) {
             if (e.target.nodeName != 'INPUT' && e.target.nodeName != 'TEXTAREA') {
               var keyCode = e.which || e.keyCode;
               if (keyCode == $mdConstant.KEY_CODE.SPACE) {
-                firstChild.click();
-                e.preventDefault();
-                e.stopPropagation();
+                if (firstChild) {
+                  firstChild.click();
+                  e.preventDefault();
+                  e.stopPropagation();
+                }
               }
             }
           });
@@ -230,7 +236,8 @@ function mdListItemDirective($mdAria, $mdConstant, $timeout) {
 
         if (proxies.length && firstChild) {
           $element.children().eq(0).on('click', function(e) {
-            if (firstChild.contains(e.target)) {
+            var parentButton = $mdUtil.getClosest(e.target, 'BUTTON');
+            if (!parentButton && firstChild.contains(e.target)) {
               angular.forEach(proxies, function(proxy) {
                 if (e.target !== proxy && !proxy.contains(e.target)) {
                   angular.element(proxy).triggerHandler('click');
@@ -243,7 +250,7 @@ function mdListItemDirective($mdAria, $mdConstant, $timeout) {
     }
   };
 }
-mdListItemDirective.$inject = ["$mdAria", "$mdConstant", "$timeout"];
+mdListItemDirective.$inject = ["$mdAria", "$mdConstant", "$mdUtil", "$timeout"];
 
 /*
  * @private
@@ -252,15 +259,16 @@ mdListItemDirective.$inject = ["$mdAria", "$mdConstant", "$timeout"];
  * @module material.components.list
  *
  */
-function MdListController($scope, $element, $mdInkRipple) {
+function MdListController($scope, $element, $mdListInkRipple) {
   var ctrl = this;
   ctrl.attachRipple = attachRipple;
 
   function attachRipple (scope, element) {
     var options = {};
-    $mdInkRipple.attachListControlBehavior(scope, element, options);
+    $mdListInkRipple.attach(scope, element, options);
   }
 }
-MdListController.$inject = ["$scope", "$element", "$mdInkRipple"];
+MdListController.$inject = ["$scope", "$element", "$mdListInkRipple"];
+
 
 ng.material.components.list = angular.module("material.components.list");

@@ -2,10 +2,11 @@
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v0.9.0
+ * v0.11.2
  */
-(function () {
+(function( window, angular, undefined ){
 "use strict";
+
 /**
  * @ngdoc module
  * @name material.components.swipe
@@ -51,11 +52,11 @@ angular.module('material.components.swipe', ['material.core'])
 function getDirective(name) {
   var directiveName = 'md' + name;
   var eventName = '$md.' + name.toLowerCase();
-
+
     DirectiveFactory.$inject = ["$parse"];
   return DirectiveFactory;
 
-  /* @ngInject */
+  /* ngInject */
   function DirectiveFactory($parse) {
       return { restrict: 'A', link: postLink };
       function postLink(scope, element, attr) {
@@ -69,4 +70,4 @@ function getDirective(name) {
 
 
 
-})();
+})(window, window.angular);
