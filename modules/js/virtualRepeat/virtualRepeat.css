@@ -2,8 +2,13 @@
  * Angular Material Design
  * https://github.com/angular/material
  * @license MIT
- * v1.0.0-rc4-master-2ab1d2d
+ * v1.1.0-rc.5
  */
+/*  Only used with Theme processes */
+html.md-THEME_NAME-theme, body.md-THEME_NAME-theme {
+  color: '{{foreground-1}}';
+  background-color: '{{background-color}}'; }
+
 .md-virtual-repeat-container {
   box-sizing: border-box;
   display: block;
@@ -40,7 +45,13 @@
 .md-virtual-repeat-container.md-orient-horizontal .md-virtual-repeat-scroller {
   overflow-x: auto;
   overflow-y: hidden; }
+
 .md-virtual-repeat-container.md-orient-horizontal .md-virtual-repeat-offsetter {
   bottom: 16px;
   right: auto;
   white-space: nowrap; }
+  [dir=rtl] .md-virtual-repeat-container.md-orient-horizontal .md-virtual-repeat-offsetter {
+    right: 0;
+    right: auto;
+    right: initial;
+    left: auto; }
